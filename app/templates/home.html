@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Library Management System</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+</head>
+<body>
+	<div class="container mt-3" style="max-width: 90rem;">
+		<div class="inner_y6" style="height: 85vh;">
+			<div class="dgrg d-flex border-bottom">
+				<div class="text_title" style="width: 50%">
+					<h3 class="text-primary">Library Management System</h3>
+				</div>
+				<div class="crate_manage text-end mb-2" style="width: 50%">					
+					<a href="{% url 'create_update_member' %}" class="btn btn-success">Create Member</a>
+				</div>
+			</div>
+			<div class="card border-0" style="height:100%">
+			  <div class="row g-0">
+			    <div class="col-md-1" style="height: 85vh;">
+			    	<div class="list_dh6 mt-5">
+		    			<div class="list-group">
+						  <a href="{% url 'home' %}" class="list-group-item list-group-item-action active p-2" aria-current="true">Members</a>
+						  <a href="{% url 'books' %}" class="list-group-item list-group-item-action p-2">Books</a>
+						</div>
+		    		</div>
+			    </div>
+			    <div class="col-md-11">
+			    	<div class="card-body upper_2nd d-flex">
+			        	<div class="fgt5" style="width: 50%;">
+			        		<h5 class="text-bold">Total Members(<span>{{members_counts}}</span>)</h5>
+			        	</div>
+			        	<div class="ffr3" style="width: 50%;">
+			        		<form class="d-flex justify-content-end">
+				        		<input type="text" class="border" id="search_member" placeholder="Search for a member name" style="border: none; border-top-left-radius: 5px; border-bottom-left-radius: 5px; width: 400px; padding: 5px; outline: none;">	
+				        		<input type="button" id="btn_search_member" class="btn_sch bg-success text-white" value="Search" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px; border: none;">		        
+				        	</form>
+			        	</div>			        	
+			        </div>
+			      <div class="card-body">	
+				      <div class="trd_data" style="height: 75vh; overflow: auto;">
+				      	{% if members %}
+				      	<table class="table">
+						  <thead>
+						    <tr>
+						      <th scope="col">Member ID</th>
+						      <th scope="col">Member Name</th>
+						      <th scope="col">Gender</th>
+						      <th scope="col">BookID</th>
+						      <th scope="col">Status</th>
+						      <th scope="col">Rent</th>
+						      <th scope="col">Book Issue Date</th>
+						      <th scope="col">Actions</th>
+						    </tr>
+						  </thead>
+						  <tbody id="search_mem">
+						  	{% for mb in members %}
+						    <tr>
+						      <td>{{mb.memberid}}</td>
+						      <td>{{mb.member_name}}</td>
+						      <td>{{mb.Gender}}</td>
+						      <td>{{mb.bookid}}</td>
+						      <td>{{mb.status}}</td>
+						      <td>{{mb.rent}}</td>
+						      <td>{{mb.book_issue_date}}</td>
+						      <td class="d-flex">
+						      	<a href="{% url 'update_member' mb.memberid %}" class="btn btn-success btn-sm">Edit</a>
+						      	<form action="{% url 'del_member' mb.memberid %}" method="POST" style="margin-left: 5px;">
+						      		{% csrf_token %}
+						      		<input type="submit" class="btn btn-danger btn-sm" value="Delete">
+						      	</form>
+						      </td>
+						    </tr>
+						    {% endfor %}
+						  </tbody>
+						</table>
+						{% else %}
+						<div class="text-center mt-5 pt-5">
+							<h5 class="text-bold">No Members</h5>
+						</div>
+						{% endif %}
+				      </div>
+			  	</div>
+			    </div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
+
+	<script type="text/javascript">
+		document.getElementById("btn_search_member").onclick = function(){
+			var search_data = document.getElementById("search_member").value;
+			fetch("http://127.0.0.1:8000/search_member/", {
+				method: 'POST',
+				body: JSON.stringify({data: search_data}),
+				headers: {
+					'Content-type': 'application/json; chatset=UTF-8'
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				var mem_data = data.members;
+				var output = "";
+				for(var m in mem_data){
+					output += `<tr>
+							      <td>${mem_data[m].memberid}</td>
+							      <td>${mem_data[m].member_name}</td>
+							      <td>${mem_data[m].gender}</td>
+							      <td>${mem_data[m].bookid}</td>
+							      <td>${mem_data[m].status}</td>
+							      <td>${mem_data[m].rent}</td>
+							      <td>${mem_data[m].book_issue_date}</td>
+							      <td class="d-flex">
+							      	<a href="update_member/${mem_data[m].memberid}/" class="btn btn-success btn-sm">Edit</a>
+							      	<form action="del_member/${mem_data[m].memberid}/" method="POST" style="margin-left: 5px;">
+							      		{% csrf_token %}
+							      		<input type="submit" class="btn btn-danger btn-sm" value="Delete">
+							      	</form>
+							      </td>
+							    </tr>`
+					document.getElementById("search_mem").innerHTML = output;
+				}
+			})
+		}
+	</script>
+</body>
+</html>

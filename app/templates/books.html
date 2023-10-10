@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Library Management System</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+</head>
+<body>
+	<div class="container mt-3" style="max-width: 90rem;">
+		<div class="inner_y6" style="height: 85vh;">
+			<div class="dgrg d-flex border-bottom">
+				<div class="text_title" style="width: 50%">
+					<h3 class="text-primary">Library Management System</h3>
+				</div>
+				<div class="crate_manage text-end mb-2" style="width: 50%">
+					<a href="{% url 'create_books' %}" style="margin-left: 10px;" class="btn btn-success" id="btn_insert_books">Insert Books</a>
+				</div>
+			</div>
+			<div class="card border-0" style="height:100%">
+			  <div class="row g-0">
+			    <div class="col-md-1" style="height: 85vh;">
+			    	<div class="list_dh6 mt-5">
+		    			<div class="list-group">
+						  <a href="{% url 'home' %}" class="list-group-item list-group-item-action p-2">Members</a>
+						  <a href="{% url 'books' %}" class="list-group-item list-group-item-action p-2 active" aria-current="true">Books</a>
+						</div>
+		    		</div>
+			    </div>
+			    <div class="col-md-11">
+			    	<div class="card-body upper_2nd d-flex">
+			        	<div class="fgt5" style="width: 50%;">
+			        		<h5 class="text-bold">Total Books(<span>{{books_counts}}</span>)</h5>
+			        	</div>
+			        	<div class="ffr3" style="width: 50%;">
+			        		<form class="d-flex justify-content-end">
+				        		<input type="text" class="border" id="search_books" placeholder="Search for a book by name and author" style="border: none; border-top-left-radius: 5px; border-bottom-left-radius: 5px; width: 400px; padding: 5px; outline: none;">	
+				        		<input type="button" id="btn_search_book" class="btn_sch bg-success text-white" value="Search" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px; border: none;">		        		
+				        	</form>
+			        	</div>			        	
+			        </div>
+			      <div class="card-body">	
+				      <div class="trd_data" style="height: 75vh; overflow: auto;">
+				      	{% if books %}
+				      	<table class="table">
+						  <thead>
+						    <tr>
+						      <th scope="col">BookID</th>
+						      <th scope="col">Title</th>
+						      <th scope="col">Author</th>
+						      <th scope="col">Average Rating</th>
+						      <th scope="col">Isbn</th>
+						      <th scope="col">Isbn13</th>
+						      <th scope="col">Language Code</th>
+						      <th scope="col">Pages</th>
+						      <th scope="col">Rating Counts</th>
+						      <th scope="col">Text Review Counts</th>
+						      <th scope="col">Publication Date</th>
+						      <th scope="col">Publisher</th>
+						      <th scope="col">Actions</th>
+						    </tr>
+						  </thead>
+						  <tbody id="search_mem">
+						  	{% for bk in books %}
+						    <tr>
+						      <td>{{bk.bookid}}</td>
+						      <td>{{bk.title}}</td>
+						      <td>{{bk.autors}}</td>
+						      <td>{{bk.average_rating}}</td>
+						      <td>{{bk.isbn}}</td>
+						      <td>{{bk.isbn13}}</td>
+						      <td>{{bk.language_codes}}</td>
+						      <td>{{bk.num_pages}}</td>
+						      <td>{{bk.ratings_count}}</td>
+						      <td>{{bk.text_reviews_count}}</td>
+						      <td>{{bk.publication_date}}</td>
+						      <td>{{bk.publisher}}</td>
+						      <td class="d-flex">
+						      	<a href="{% url 'update_books' bk.bookid %}" class="btn btn-success btn-sm">Edit</a>
+						      	<form action="{% url 'del_book' bk.bookid %}" method="POST" style="margin-left: 5px;">
+						      		{% csrf_token %}
+						      		<input type="submit" class="btn btn-danger btn-sm" value="Delete">
+						      	</form>
+						      </td>
+						    </tr>
+						    {% endfor %}
+						  </tbody>
+						</table>
+						{% else %}
+						<div class="text-center mt-5 pt-5">
+							<h5 class="text-bold">No Data</h5>
+						</div>
+						{% endif %}
+				      </div>
+			  	</div>
+			    </div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
+
+	<script type="text/javascript">
+		document.getElementById("btn_search_book").onclick = function(){
+			var search_data = document.getElementById("search_books").value;
+			fetch("http://127.0.0.1:8000/search_books/", {
+				method: 'POST',
+				body: JSON.stringify({data: search_data}),
+				headers: {
+					'Content-type': 'application/json; chatset=UTF-8'
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				var book_data = data.books;
+				var output = "";
+				for(var b in book_data){
+					output += `<tr>
+							      <td>${book_data[b].bookid}</td>
+							      <td>${book_data[b].title}</td>
+							      <td>${book_data[b].autors}</td>
+							      <td>${book_data[b].average_rating}</td>
+							      <td>${book_data[b].isbn}</td>
+							      <td>${book_data[b].isbn13}</td>
+							      <td>${book_data[b].language_codes}</td>
+							      <td>${book_data[b].num_pages}</td>
+							      <td>${book_data[b].ratings_count}</td>
+							      <td>${book_data[b].text_reviews_count}</td>
+							      <td>${book_data[b].publication_date}</td>
+							      <td>${book_data[b].publisher}</td>
+							      <td class="d-flex">
+							      	<a href="/update_books/${book_data[b].bookid}/" class="btn btn-success btn-sm">Edit</a>
+							      	<form action="/del_book/${book_data[b].bookid}/" method="POST" style="margin-left: 5px;">
+							      		{% csrf_token %}
+							      		<input type="submit" class="btn btn-danger btn-sm" value="Delete">
+							      	</form>
+							      </td>
+							    </tr>`
+					document.getElementById("search_mem").innerHTML = output;
+				}
+			})
+		}
+	</script>
+</body>
+</html>

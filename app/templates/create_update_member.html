@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Library Management System</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+</head>
+<body>
+	<div class="container mt-3" style="max-width: 90rem;">
+		<div class="inner_y6" style="height: 85vh;">
+			<div class="dgrg d-flex border-bottom">
+				<div class="text_title" style="width: 50%">
+					<h3 class="text-primary">Library Management System</h3>
+				</div>
+			</div>
+			<div class="card border-0" style="height:100%">
+			  <div class="row g-0">
+			    <div class="col-md-1" style="height: 85vh;">
+			    	<div class="list_dh6 mt-5">
+		    			<div class="list-group">
+						  <a href="{% url 'home' %}" class="list-group-item list-group-item-action p-2">Members</a>
+						  <a href="{% url 'books' %}" class="list-group-item list-group-item-action p-2">Books</a>
+						</div>
+		    		</div>
+			    </div>
+			    <div class="col-md-11">
+			      <div class="card-body">
+			      	{% if messages %}
+			      	{% for msg in messages %}
+			      	<div class="alert alert-success alert-dismissible fade show" role="alert">
+					   {{msg}}
+					  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+					{% endfor %}
+					{% endif %}
+			      	  <div class="fgt5 mb-3">
+			        		<h5 class="text-bold">Create Member</h5>
+			        	</div>	
+				      <div class="creetf4">
+						<form class="row g-3" action="" method="POST">
+							{% csrf_token %}
+						  <div class="col-4">
+						    <label for="inputEmail4" class="form-label">Enter Member ID</label>
+						    {{form.memberid}}
+						  </div>
+						  <div class="col-4">
+						    <label class="form-label">Enter Member Name</label>
+						    {{form.member_name}}
+						  </div>
+						  <div class="col-4">
+						    <label class="form-label">Select Gender</label>
+						    {{form.Gender}}
+						  </div>
+						  <div class="col-4">
+						    <label class="form-label">Select Your Book</label>
+						    {{form.bookid}}
+						  </div>
+						  <div class="col-4">
+						    <label class="form-label">Select Your Statuc</label>
+						    {{form.status}}
+						  </div>
+						  <div class="col-4">
+						    <label class="form-label">Enter Book Rent</label>
+						    {{form.rent}}
+						  </div>
+						  <div class="col-12 mt-5">
+						    <button type="submit" class="btn btn-primary">Create Member</button>
+						  </div>
+						</form>
+				      </div>
+			  		</div>
+			  	</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
+</body>
+</html>
